@@ -10,11 +10,10 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($id)
+    public function index()
     {
-        $posts = Post::all($id);
-        $posts->index();
-        return view('posts.index' . $posts);
+        $posts = Post::all();
+        return view('posts.index', ['posts' => $posts]);
     }
 
     /**
@@ -30,15 +29,14 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $data = [
-            'title' => $request->title,
-            'content' => $request->content,
-            'id' => $request->id
-        ];
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string'
+        ]);
 
         Post::create($data);
 
-        return redirect('/posts');
+        return redirect('/posts')->with('success', 'Post created successfully!');
     }
 
     /**
@@ -46,16 +44,16 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
         return view('posts.show', ['post' => $post]);
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      */
     public function edit($id)
     {
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
         return view('posts.edit', ['post' => $post]);
     }
 
@@ -64,16 +62,16 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
 
-        $data = [
-            'title' => $request->title,
-            'content' => $request->content
-        ];
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string'
+        ]);
 
         $post->update($data);
 
-        return redirect('/posts');
+        return redirect('/posts')->with('success', 'Post updated successfully!');
     }
 
     /**
@@ -81,8 +79,9 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
         $post->delete();
-        return redirect('/posts');
-    }    
+
+        return redirect('/posts')->with('success', 'Post deleted successfully!');
+    }
 }
