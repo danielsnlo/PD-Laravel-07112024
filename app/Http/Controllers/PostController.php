@@ -10,10 +10,11 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($id)
     {
-        $posts = Post::all();
-        return view('posts.index');
+        $posts = Post::all($id);
+        $posts->index();
+        return view('posts.index' . $posts);
     }
 
     /**
@@ -31,7 +32,8 @@ class PostController extends Controller
     {
         $data = [
             'title' => $request->title,
-            'content' => $request->content
+            'content' => $request->content,
+            'id' => $request->id
         ];
 
         Post::create($data);
@@ -42,8 +44,9 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function show($id)
     {
+        $post = Post::find($id);
         return view('posts.show', ['post' => $post]);
     }
     
